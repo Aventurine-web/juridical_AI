@@ -5,16 +5,16 @@ import { cn } from "@/lib/utils"
 
 interface Msg { who: "user" | "bot"; text: string; thinking?: boolean }
 
-// The three high-fidelity test cases the agent is graded on. Order matches the
-// demo answers in adk.ts (hembud → karensavdrag → VAT).
+// De tre testfrågorna agenten bedöms på. Ordningen matchar demosvaren i adk.ts
+// (hembud → karensavdrag → moms).
 const SUGGESTIONS = [
-  "Explain the requirements for a hembudsförbehåll (first-right-of-refusal) in a Swedish AB shareholders' agreement.",
-  "How do I calculate karensavdrag for a part-time employee under current Swedish rules?",
-  "VAT for a Swedish company selling SaaS B2B in Norway vs B2C in Germany?",
+  "Förklara kraven för ett hembudsförbehåll i ett aktieägaravtal för ett svenskt AB.",
+  "Hur beräknar jag karensavdrag för en deltidsanställd enligt nuvarande svenska regler?",
+  "Moms för ett svenskt företag som säljer SaaS B2B i Norge jämfört med B2C i Tyskland?",
 ]
-const SHORT_LABELS = ["Hembudsförbehåll", "Karensavdrag", "SaaS VAT abroad"]
+const SHORT_LABELS = ["Hembudsförbehåll", "Karensavdrag", "SaaS-moms utomlands"]
 
-/** Render the agent's Markdown-ish answer (## headings, **bold**, bullets) nicely. */
+/** Återge agentens Markdown-aktiga svar (## rubriker, **fetstil**, punktlistor) snyggt. */
 function inline(line: string) {
   return line.split(/(\*\*[^*]+\*\*)/g).map((p, i) =>
     p.startsWith("**") && p.endsWith("**") ? (
@@ -46,7 +46,7 @@ export function Chat() {
   const [msgs, setMsgs] = useState<Msg[]>([
     {
       who: "bot",
-      text: "Hej! Ask me a Swedish compliance question — tax, VAT, labour law or company law — and I'll give a structured, source-cited answer. Try one of the high-fidelity test cases below.",
+      text: "Hej! Ställ en compliance-fråga om svensk skatt, moms, arbetsrätt eller bolagsrätt — så ger jag ett strukturerat svar med källhänvisningar. Prova någon av testfrågorna nedan.",
     },
   ])
   const [input, setInput] = useState("")
@@ -67,7 +67,7 @@ export function Chat() {
     if (!q || busy) return
     setInput("")
     setBusy(true)
-    setMsgs((m) => [...m, { who: "user", text: q }, { who: "bot", text: "Thinking…", thinking: true }])
+    setMsgs((m) => [...m, { who: "user", text: q }, { who: "bot", text: "Tänker…", thinking: true }])
     try {
       let reply: string
       if (live) {
@@ -78,11 +78,11 @@ export function Chat() {
       }
       setMsgs((m) => [...m.slice(0, -1), { who: "bot", text: reply }])
     } catch (err) {
-      const message = err instanceof Error ? err.message : "request failed"
+      const message = err instanceof Error ? err.message : "förfrågan misslyckades"
       setLive(false)
       setMsgs((m) => [
         ...m.slice(0, -1),
-        { who: "bot", text: `Couldn't reach the live agent (${message}). Run \`adk api_server\` and reload to go live.` },
+        { who: "bot", text: `Kunde inte nå agenten (${message}). Kör \`adk api_server\` och ladda om för att gå live.` },
       ])
     } finally {
       setBusy(false)
@@ -95,7 +95,7 @@ export function Chat() {
     <div className="flex h-[560px] flex-col overflow-hidden rounded-2xl border border-border bg-popover shadow-[0_1px_2px_rgba(26,26,26,0.04),0_24px_48px_-24px_rgba(26,26,26,0.18)] md:h-[640px]">
       <div className="flex items-center gap-2 border-b border-border px-5 py-3.5 text-[13px] text-muted-foreground">
         <span className={cn("h-1.5 w-1.5 rounded-full", live ? "bg-primary" : "bg-muted-foreground/40")} />
-        {live ? "Live · connected to your agent" : "Demo mode · run “adk api_server” to go live"}
+        {live ? "Live · ansluten till din agent" : "Demoläge · kör ”adk api_server” för att gå live"}
       </div>
 
       <div ref={logRef} className="flex flex-1 flex-col gap-3.5 overflow-y-auto px-5 py-5">
@@ -115,11 +115,11 @@ export function Chat() {
         ))}
       </div>
 
-      {/* Example questions — prominent in the empty state, compact chips afterwards */}
+      {/* Exempelfrågor — framträdande i tomt läge, kompakta chips därefter */}
       {empty ? (
         <div className="px-5 pb-3">
           <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-burnt">
-            Try a real test case
+            Prova en riktig testfråga
           </div>
           <div className="flex flex-col gap-2">
             {SUGGESTIONS.map((s) => (
@@ -158,14 +158,14 @@ export function Chat() {
           id="chat-input"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask about Swedish tax, VAT, labour law or company law…"
+          placeholder="Fråga om svensk skatt, moms, arbetsrätt eller bolagsrätt…"
           autoComplete="off"
           className="flex-1 rounded-xl bg-background px-4 py-3 text-sm outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-ring/40"
         />
         <button
           type="submit"
           disabled={busy}
-          aria-label="Send"
+          aria-label="Skicka"
           className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-primary text-primary-foreground transition hover:opacity-90 disabled:opacity-40"
         >
           <ArrowUp size={18} />
