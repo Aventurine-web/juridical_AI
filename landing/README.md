@@ -1,50 +1,68 @@
-# Landing page
+# Landing page (Vite + React + Tailwind v4 + Three.js)
 
-A single self-contained `index.html` — the pitch, GTM, and pricing **plus** a
-live chat box wired to the Google ADK agent in this repo. No build step.
+Same stack as AgentFoundry's frontend. The page is the pitch (hero, GTM,
+pricing) **plus** a live chat box wired to the Google ADK agent in this repo.
+Clicking the 3D orb jumps to the live agent.
 
-## Just want to look at it?
-
-Open `landing/index.html` in a browser (double-click). The 3D orb and all
-content render instantly. The chat box runs in **offline demo mode** (scripted
-replies) until you connect the real agent below.
-
-## Make the chat box talk to the REAL agent (the impressive demo)
-
-Two terminals:
+## Run it
 
 ```bash
-# Terminal 1 — serve the agent over HTTP (from repo root, venv active)
-# --allow_origins lets the browser page call it (CORS).
-adk api_server --allow_origins="*"
-```
-
-```bash
-# Terminal 2 — serve the landing page over http:// (not file://, so CORS works)
 cd landing
-python3 -m http.server 5500
+npm install
+npm run dev          # → http://localhost:5173
 ```
 
-Then open **http://localhost:5500** . The status dot turns 🟢 green and the chat
-box now streams answers from the live Gemini-powered agent.
+## Make the chat box talk to the REAL agent
 
-> If the dot stays amber, the page just uses scripted fallback replies — the
-> demo still works, it's just not hitting the real model.
+In a second terminal, from the **repo root** (venv active):
+
+```bash
+adk api_server       # serves the agent on :8000
+```
+
+Vite proxies `/adk/*` → `localhost:8000` (see `vite.config.ts`), so there's **no
+CORS setup needed**. Reload the page — the status dot turns 🟢 green and the chat
+streams real answers from Gemini. If the agent isn't running, the box uses
+scripted fallback replies so the demo always works.
+
+## Stack
+
+| | |
+|---|---|
+| Build | Vite 8 |
+| UI | React 19 + TypeScript |
+| Styling | Tailwind v4 (`@tailwindcss/vite`) + design tokens in `src/index.css` |
+| 3D | `@react-three/fiber` + `three` (the recolored `IridescentOrb`) |
+| Icons | `lucide-react` |
+
+## Files
+
+```
+landing/
+  index.html
+  vite.config.ts            # /adk proxy → adk api_server
+  src/
+    main.tsx
+    App.tsx                 # all landing sections (TODO @16:00 markers)
+    index.css               # emerald/teal theme tokens
+    components/
+      IridescentOrb.tsx     # recolored shader orb; onActivate → chat
+      Chat.tsx              # live ADK chat + scripted fallback
+    lib/
+      adk.ts                # ADK api_server client
+      utils.ts              # cn() helper
+```
 
 ## What to edit at 16:00
 
-Everything mission-specific is marked `TODO @16:00` in `index.html`:
-- Hero headline + value prop
-- Problem / solution cards
-- GTM highlights (mirror `docs/GTM.md`)
-- Pricing numbers (mirror `docs/MONETIZATION.md`)
-- `SUGGESTIONS` array (JS, near the bottom) — set demo prompts that show off the mission
+Search for `TODO @16:00`:
+- `App.tsx` — hero headline, problem/solution, GTM cards, pricing numbers
+- `Chat.tsx` — `SUGGESTIONS` (demo prompts that show off the mission)
+- Re-skin colors via the `.dark { --primary / --accent / --warning }` tokens in `index.css`
 
-Re-skin colors via the `:root` CSS variables at the top (`--accent`, etc.).
+## Build / deploy
 
-## Deploy to Vercel later (optional, 1 min)
-
-It's a static file, so:
 ```bash
-cd landing && vercel deploy   # or drag the folder into vercel.com
+npm run build        # type-check + production build → dist/
+vercel deploy        # static deploy (or drag dist/ to vercel.com)
 ```
