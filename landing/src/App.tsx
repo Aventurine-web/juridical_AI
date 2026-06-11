@@ -1,5 +1,7 @@
+import { useState } from "react"
 import { IridescentOrb } from "@/components/IridescentOrb"
 import { Chat } from "@/components/Chat"
+import { GTMOverlay } from "@/components/GTMOverlay"
 
 function goTo(id: string, focusChat = false) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth" })
@@ -39,18 +41,25 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+  const [gtmOpen, setGtmOpen] = useState(false)
   return (
     <div className="page-bg min-h-full">
       {/* NAV */}
       <nav className="sticky top-0 z-50 border-b border-border/70 bg-background/80 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <div className="font-display text-xl tracking-tight">Vorker</div>
-          <div className="hidden gap-9 md:flex">
+          <div className="hidden items-center gap-9 md:flex">
             {NAV.map((n) => (
               <button key={n.id} onClick={() => goTo(n.id)} className="text-sm text-muted-foreground transition hover:text-foreground">
                 {n.label}
               </button>
             ))}
+            <button
+              onClick={() => setGtmOpen(true)}
+              className="text-sm text-muted-foreground transition hover:text-foreground"
+            >
+              Market Strategy
+            </button>
           </div>
           <button
             onClick={() => goTo("agent", true)}
@@ -60,6 +69,8 @@ export default function App() {
           </button>
         </div>
       </nav>
+
+      <GTMOverlay open={gtmOpen} onClose={() => setGtmOpen(false)} />
 
       {/* HERO */}
       <header className="mx-auto grid max-w-6xl items-center gap-12 px-6 pb-20 pt-16 md:min-h-[calc(100vh-4rem)] md:grid-cols-[1.05fr_0.95fr] md:gap-10 md:pb-10">
@@ -86,6 +97,12 @@ export default function App() {
               className="rounded-full border border-border px-6 py-3 text-[15px] font-medium text-foreground transition hover:bg-secondary"
             >
               How it works
+            </button>
+            <button
+              onClick={() => setGtmOpen(true)}
+              className="rounded-full px-6 py-3 text-[15px] font-medium text-foreground/80 underline-offset-4 transition hover:text-foreground hover:underline"
+            >
+              Explore Market Strategy →
             </button>
           </div>
           <p className="fade-up-3 mt-7 font-display text-lg italic text-foreground/80">
@@ -262,10 +279,10 @@ export default function App() {
               Try the AI Agent
             </button>
             <button
-              onClick={() => goTo("how")}
+              onClick={() => setGtmOpen(true)}
               className="rounded-full border border-border bg-background px-7 py-3.5 text-[15px] font-medium transition hover:bg-secondary"
             >
-              How it works
+              Explore Market Strategy
             </button>
           </div>
         </div>
