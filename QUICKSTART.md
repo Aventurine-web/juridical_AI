@@ -3,6 +3,11 @@
 Do this *now* so that when the assignment drops you're only writing the prompt,
 not fighting setup. Target: green `adk run` before the briefing ends.
 
+> **TL;DR — run the whole demo with one command:** `./dev.sh`
+> (starts the agent API on :8000 **and** the landing page on :5173, and stops
+> both with Ctrl+C). First run sets up the venv + npm deps automatically.
+> Manual steps below if you'd rather do it piece by piece.
+
 ## 1. One-time setup (do before 16:00)
 
 ```bash
