@@ -48,8 +48,17 @@ Vorker-ai-phase-one/
 │   ├── tools.py         ← web_search (working) + custom tool template
 │   └── AGENT.md         ← spec sheet (source of truth)
 ├── test_prompts.md      ← prompts to demo the agent
+├── landing/             ← single-file landing page: pitch + GTM + LIVE agent chat
+│   └── index.html       ← open in a browser; talks to `adk api_server` when live
 └── docs/                ← business side (pitch, GTM, monetization, partnerships)
 ```
+
+## Landing page & live demo
+
+`landing/index.html` is a zero-build landing page (animated 3D orb, pitch, GTM,
+pricing) with a chat box that talks to the **real agent** when `adk api_server`
+is running — and falls back to a scripted demo otherwise. See
+[`landing/README.md`](landing/README.md) to run it.
 
 ## Team
 
