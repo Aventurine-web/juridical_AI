@@ -1,4 +1,5 @@
 google-adk>=1.0.0
 google-genai>=1.0.0
 ddgs>=9.14,<10
+pypdf>=5.0
 python-dotenv>=1.0

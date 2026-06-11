@@ -59,8 +59,33 @@ export async function askAgent(text: string): Promise<string> {
   return extractText(await r.json()) || "(the agent returned no text)"
 }
 
-/** Scripted fallback so the page demos well even with no backend running. */
+/** Scripted fallback so the page demos well even with no backend running.
+ *  Mirrors the agent's evidence-first 5-section format. */
 export const MOCK_REPLIES = [
-  "Here's how I'd approach it: start from the customer's job-to-be-done, define a sharp positioning statement, then pick one beachhead segment to win first. (This is a preview — run `adk api_server` and I'll work it through live with you.)",
-  "A strong GTM plan moves in order: positioning → segmentation → messaging → channels → launch → measure. Connect me to the live agent (`adk api_server`) and I'll build each step around your product.",
+  `## Answer
+Yes — the shareholder agreement contains a hembudsförbehåll (first-right-of-refusal).
+
+## Evidence from Documents
+"§4 Hembudsförbehåll (förköpsrätt): Önskar en Aktieägare överlåta sina aktier till tredje man ska aktierna först hembjudas till övriga Aktieägare…"
+— sample_aktieagaravtal.pdf, page 1
+
+## Official Sources
+Bolagsverket — hembudsförbehåll in the bolagsordning: bolagsverket.se …
+
+## Recommendation
+Confirm the 30-day window matches your bolagsordning so the clause is enforceable.
+
+## Disclaimer
+General information, not legal advice. (Preview — run \`adk api_server\` for a live answer.)`,
+  `## Answer
+The consulting agreement caps the client's liability and assigns all IP to the client.
+
+## Evidence from Documents
+"§3 Ansvarsbegränsning … begränsat till … de senaste tre (3) månaderna." — sample_konsultavtal.pdf, page 1
+
+## Recommendation
+Review §8's penalty (vite, 100 000 kr) against the capped liability — they conflict.
+
+## Disclaimer
+General information, not legal advice. (Preview — run \`adk api_server\` for a live answer.)`,
 ]

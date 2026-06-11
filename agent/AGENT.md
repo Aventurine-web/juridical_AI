@@ -1,41 +1,50 @@
-# Agent Spec Sheet
+# Agent Spec Sheet — Vorker Compliance Copilot
 
-> Source of truth for what this agent does. Fill this in at 16:00 once the
-> assignment PDF is revealed, then keep `agent.py` in sync with it.
+> Evidence-first AI advisor for Swedish SMEs. Reads uploaded documents, quotes the
+> exact clause + page, and grounds answers in official Swedish sources.
 
 ## Name
-
-`vorker_agent`  <!-- TODO: real name -->
+`vorker_compliance_copilot`
 
 ## One-line purpose
-
-<!-- TODO: e.g. "Triages incoming support emails and drafts replies." -->
+Prove compliance answers: extract the clause from the user's document, quote it with
+a page number, and compare it against Skatteverket / Bolagsverket / verksamt.se.
 
 ## Model
+`gemini-2.5-flash` · temperature `0.1` (accuracy over creativity)
 
-`gemini-2.5-flash`  <!-- swap to gemini-2.5-pro for harder reasoning tasks -->
-
-## System prompt (the real work — mirror agent.py INSTRUCTION)
-
-```
-TODO: paste the final system prompt here.
-Cover: role, goal, what inputs it gets, the step-by-step workflow,
-and the exact output format you want.
-```
-
-## Workflow
-
-1. <!-- step 1 -->
-2. <!-- step 2 -->
-3. <!-- step 3 -->
+## Evidence layers
+1. **User documents** — files in `documents/` (PDF / txt / md)
+2. **Official sources** — skatteverket.se, bolagsverket.se, verksamt.se
+3. **Broader web** — fallback only, labelled unofficial
 
 ## Tools
+| Tool | What it does |
+|------|--------------|
+| `list_documents` | List available documents + page counts |
+| `search_documents` | Find a clause/term → exact quote + page number |
+| `read_document_page` | Full text of one page for precise quoting |
+| `search_official_sources` | Search restricted to the 3 authoritative `.se` domains |
+| `web_search_broad` | General web fallback (unofficial, must be flagged) |
 
-| Tool | What it does | Status |
-|------|--------------|--------|
-| `web_search` | Live web search via DuckDuckGo (no API key) | ✅ working |
-| `example_tool` | Template stub — rename/replace | 🔲 stub |
+## Required response format
+```
+## Answer
+## Evidence from Documents   (quote + document + page + section)
+## Official Sources          (URLs)
+## Recommendation
+## Disclaimer                (general info, not legal/tax advice)
+```
 
-## Out of scope (be explicit — shows good judgment to reviewers)
+## Guardrails
+- Quote documents verbatim with page numbers; never invent a clause.
+- Cite official URLs or decline; flag rules that change yearly (rates, avdrag).
+- Answer in the user's language (SV/EN).
 
-- <!-- what this agent intentionally does NOT do -->
+## How to run
+```bash
+# from repo root, with GOOGLE_API_KEY in .env
+adk run agent          # terminal
+adk web                # browser UI (supports file upload as artifacts)
+```
+Documents are read from `documents/` (override with `DOCUMENTS_DIR`).
