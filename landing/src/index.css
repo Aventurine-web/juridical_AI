@@ -1,35 +1,42 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
+/* ============================================================
+   Vorker — warm editorial theme.
+   Premium, minimal, high-end. Warm off-white + charcoal + dusty
+   rose brand, with apricot / coral / burnt-orange supporting tones.
+   Single light theme. No neon, no glow, no glass.
+   ============================================================ */
+:root {
+  --radius: 1rem;
 
-/* Vorker design tokens — emerald/teal identity (distinct from AgentFoundry's
-   indigo). Dark is the default and the only theme we ship for the sprint. */
-.dark {
-  --radius: 0.85rem;
+  --background: #faf8f5;            /* warm off-white */
+  --foreground: #1a1a1a;           /* charcoal */
+  --card: #f4ede4;                 /* light beige surface */
+  --card-foreground: #1a1a1a;
+  --popover: #ffffff;
+  --popover-foreground: #1a1a1a;
+  --primary: #d98a9c;              /* dusty rose — brand + CTA */
+  --primary-foreground: #241419;   /* warm near-black on rose */
+  --secondary: #f0e8de;            /* beige for ghost surfaces */
+  --secondary-foreground: #1a1a1a;
+  --muted: #f0e9e0;
+  --muted-foreground: #6b645c;     /* warm gray */
+  --accent: #d36a3d;               /* burnt orange — used sparingly */
+  --accent-foreground: #ffffff;
+  --border: #e8ded2;               /* warm hairline */
+  --input: #e8ded2;
+  --ring: #d98a9c;
 
-  --background: oklch(0.16 0.018 175);
-  --foreground: oklch(0.93 0.012 175);
-  --card: oklch(0.19 0.02 175);
-  --card-foreground: oklch(0.93 0.012 175);
-  --popover: oklch(0.19 0.02 175);
-  --popover-foreground: oklch(0.93 0.012 175);
-  --primary: oklch(0.76 0.15 168);          /* emerald */
-  --primary-foreground: oklch(0.16 0.03 168);
-  --secondary: oklch(0.24 0.02 175);
-  --secondary-foreground: oklch(0.93 0.012 175);
-  --muted: oklch(0.23 0.018 175);
-  --muted-foreground: oklch(0.68 0.02 175);
-  --accent: oklch(0.8 0.14 200);            /* teal/cyan accent */
-  --accent-foreground: oklch(0.16 0.03 200);
-  --warning: oklch(0.82 0.15 75);           /* gold */
-  --destructive: oklch(0.68 0.21 25);
-  --border: oklch(0.3 0.018 175);
-  --input: oklch(0.3 0.018 175);
-  --ring: oklch(0.76 0.15 168);
+  /* Supporting warm tones (orb + accents) */
+  --rose: #d98a9c;
+  --apricot: #f5b088;
+  --coral: #e97a62;
+  --burnt: #d36a3d;
 
   --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Consolas, monospace;
+  --font-serif: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 }
 
 @theme inline {
@@ -47,18 +54,22 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
-  --color-warning: var(--warning);
-  --color-destructive: var(--destructive);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
+  --color-rose: var(--rose);
+  --color-apricot: var(--apricot);
+  --color-coral: var(--coral);
+  --color-burnt: var(--burnt);
+
+  --radius-sm: calc(var(--radius) - 6px);
+  --radius-md: calc(var(--radius) - 3px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 6px);
 
   --font-sans: var(--font-sans);
+  --font-serif: var(--font-serif);
   --font-mono: var(--font-mono);
 }
 
@@ -66,25 +77,34 @@
   * {
     @apply border-border;
   }
-  html, body, #root {
-    height: 100%;
-  }
+  html { scroll-behavior: smooth; }
+  html, body, #root { height: 100%; }
   body {
     @apply bg-background text-foreground antialiased;
+    font-family: var(--font-sans);
     font-feature-settings: "rlig" 1, "calt" 1;
   }
-  code, pre, kbd { font-family: var(--font-mono); }
+  /* Editorial serif for display headings. */
+  .font-display {
+    font-family: var(--font-serif);
+    font-optical-sizing: auto;
+    letter-spacing: -0.015em;
+    font-weight: 400;
+  }
+  ::selection { background: color-mix(in oklab, var(--rose) 45%, white); }
 }
 
-/* Ambient gradient wash for the page background. */
+/* Very subtle warm wash — nothing loud. */
 .page-bg {
   background:
-    radial-gradient(1200px 700px at 80% -10%, oklch(0.76 0.15 168 / 0.12), transparent 60%),
-    radial-gradient(900px 600px at 5% 110%, oklch(0.8 0.14 200 / 0.10), transparent 55%);
+    radial-gradient(60rem 40rem at 85% -8%, color-mix(in oklab, var(--apricot) 22%, transparent), transparent 70%),
+    radial-gradient(50rem 36rem at -5% 8%, color-mix(in oklab, var(--rose) 14%, transparent), transparent 70%);
 }
 
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-.fade-up { animation: fadeUp 0.6s ease both; }
+.fade-up { animation: fadeUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.fade-up-2 { animation: fadeUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both; }
+.fade-up-3 { animation: fadeUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.16s both; }

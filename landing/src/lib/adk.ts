@@ -61,6 +61,6 @@ export async function askAgent(text: string): Promise<string> {
 
 /** Scripted fallback so the page demos well even with no backend running. */
 export const MOCK_REPLIES = [
-  "I'm the Vorker agent (offline demo mode). Start me with `adk api_server` from the repo root and I'll answer for real — using Gemini + live web search.",
-  "In live mode I plan the task, call my tools (e.g. web_search), and synthesize a clear answer. Run `adk api_server` and ask me again!",
+  "Here's how I'd approach it: start from the customer's job-to-be-done, define a sharp positioning statement, then pick one beachhead segment to win first. (This is a preview — run `adk api_server` and I'll work it through live with you.)",
+  "A strong GTM plan moves in order: positioning → segmentation → messaging → channels → launch → measure. Connect me to the live agent (`adk api_server`) and I'll build each step around your product.",
 ]

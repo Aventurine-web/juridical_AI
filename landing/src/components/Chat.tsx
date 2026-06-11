@@ -1,20 +1,24 @@
 import { useEffect, useRef, useState } from "react"
-import { Send } from "lucide-react"
+import { ArrowUp } from "lucide-react"
 import { askAgent, probeAdk, MOCK_REPLIES } from "@/lib/adk"
 import { cn } from "@/lib/utils"
 
 interface Msg { who: "user" | "bot"; text: string; thinking?: boolean }
 
-// TODO @16:00: tailor these to the revealed mission so reviewers see it shine.
+// TODO @16:00: tailor to the revealed mission. These show GTM range:
+// positioning, segmentation, messaging, launch.
 const SUGGESTIONS = [
-  "What can you do?",
-  "Search the web for the latest on Google ADK",
-  "Summarize why this matters for a busy team",
+  "Position a new B2B product",
+  "Pick a beachhead segment for launch",
+  "Draft launch messaging for our ICP",
 ]
 
 export function Chat() {
   const [msgs, setMsgs] = useState<Msg[]>([
-    { who: "bot", text: "👋 Hi! I'm the Vorker agent. Ask me anything, or tap a suggestion below." },
+    {
+      who: "bot",
+      text: "Hi — I'm your GTM strategist. Ask me about positioning, segmentation, messaging, or a launch plan, and I'll think it through with you.",
+    },
   ])
   const [input, setInput] = useState("")
   const [live, setLive] = useState(false)
@@ -35,7 +39,7 @@ export function Chat() {
     if (!q || busy) return
     setInput("")
     setBusy(true)
-    setMsgs((m) => [...m, { who: "user", text: q }, { who: "bot", text: "thinking…", thinking: true }])
+    setMsgs((m) => [...m, { who: "user", text: q }, { who: "bot", text: "Thinking…", thinking: true }])
     try {
       let reply: string
       if (live) {
@@ -50,7 +54,7 @@ export function Chat() {
       setLive(false)
       setMsgs((m) => [
         ...m.slice(0, -1),
-        { who: "bot", text: `⚠️ ${message}\n(Falling back to offline mode — run \`adk api_server\` and reload.)` },
+        { who: "bot", text: `Couldn't reach the live agent (${message}). Run \`adk api_server\` and reload to go live.` },
       ])
     } finally {
       setBusy(false)
@@ -58,27 +62,22 @@ export function Chat() {
   }
 
   return (
-    <div className="flex h-[460px] flex-col overflow-hidden rounded-xl border border-border bg-gradient-to-b from-white/5 to-white/[0.02]">
-      <div className="flex items-center gap-2 border-b border-border px-4 py-3 text-sm">
-        <span
-          className={cn(
-            "h-2.5 w-2.5 rounded-full",
-            live ? "bg-primary shadow-[0_0_10px_var(--color-primary)]" : "bg-warning shadow-[0_0_10px_var(--color-warning)]",
-          )}
-        />
-        {live ? "live · connected to ADK agent" : "offline demo mode · run `adk api_server` to go live"}
+    <div className="flex h-[480px] flex-col overflow-hidden rounded-2xl border border-border bg-popover shadow-[0_1px_2px_rgba(26,26,26,0.04),0_24px_48px_-24px_rgba(26,26,26,0.18)]">
+      <div className="flex items-center gap-2 border-b border-border px-5 py-3.5 text-[13px] text-muted-foreground">
+        <span className={cn("h-1.5 w-1.5 rounded-full", live ? "bg-primary" : "bg-muted-foreground/40")} />
+        {live ? "Live · connected to your agent" : "Demo mode · run “adk api_server” to go live"}
       </div>
 
-      <div ref={logRef} className="flex flex-1 flex-col gap-3 overflow-y-auto p-4">
+      <div ref={logRef} className="flex flex-1 flex-col gap-3.5 overflow-y-auto px-5 py-5">
         {msgs.map((m, i) => (
           <div
             key={i}
             className={cn(
-              "max-w-[86%] whitespace-pre-wrap rounded-2xl px-3.5 py-2.5 text-[14.5px]",
+              "max-w-[88%] whitespace-pre-wrap rounded-2xl px-4 py-2.5 text-[14.5px] leading-relaxed",
               m.who === "user"
-                ? "self-end rounded-br-sm bg-primary text-primary-foreground"
-                : "self-start rounded-bl-sm border border-border bg-white/[0.06]",
-              m.thinking && "italic text-muted-foreground",
+                ? "self-end rounded-br-md bg-primary text-primary-foreground"
+                : "self-start rounded-bl-md bg-card text-card-foreground",
+              m.thinking && "text-muted-foreground",
             )}
           >
             {m.text}
@@ -86,12 +85,12 @@ export function Chat() {
         ))}
       </div>
 
-      <div className="flex flex-wrap gap-2 px-4 pb-3">
+      <div className="flex flex-wrap gap-2 px-5 pb-3">
         {SUGGESTIONS.map((s) => (
           <button
             key={s}
             onClick={() => send(s)}
-            className="rounded-full border border-border bg-white/[0.04] px-3 py-1.5 text-xs text-muted-foreground transition hover:border-primary hover:text-foreground"
+            className="rounded-full border border-border bg-background px-3.5 py-1.5 text-[13px] text-muted-foreground transition hover:border-primary hover:text-foreground"
           >
             {s}
           </button>
@@ -103,22 +102,23 @@ export function Chat() {
           e.preventDefault()
           send(input)
         }}
-        className="flex gap-2 border-t border-border p-3"
+        className="flex items-center gap-2 border-t border-border p-3"
       >
         <input
           id="chat-input"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask the agent something…"
+          placeholder="Ask about your go-to-market…"
           autoComplete="off"
-          className="flex-1 rounded-xl border border-border bg-black/30 px-3.5 py-3 text-sm outline-none focus:border-primary"
+          className="flex-1 rounded-xl bg-background px-4 py-3 text-sm outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-ring/40"
         />
         <button
           type="submit"
           disabled={busy}
-          className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition hover:opacity-90 disabled:opacity-50"
+          aria-label="Send"
+          className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-primary text-primary-foreground transition hover:opacity-90 disabled:opacity-40"
         >
-          <Send size={16} /> Send
+          <ArrowUp size={18} />
         </button>
       </form>
     </div>

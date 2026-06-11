@@ -1,235 +1,258 @@
 import { IridescentOrb } from "@/components/IridescentOrb"
 import { Chat } from "@/components/Chat"
 
-function scrollToChat() {
-  document.getElementById("try")?.scrollIntoView({ behavior: "smooth" })
-  setTimeout(() => document.getElementById("chat-input")?.focus(), 500)
+function goTo(id: string, focusChat = false) {
+  document.getElementById(id)?.scrollIntoView({ behavior: "smooth" })
+  if (focusChat) setTimeout(() => document.getElementById("chat-input")?.focus(), 550)
 }
 
 const NAV = [
-  { href: "#try", label: "Try it live" },
-  { href: "#how", label: "How it works" },
-  { href: "#gtm", label: "Go-to-market" },
-  { href: "#pricing", label: "Pricing" },
+  { id: "agent", label: "The Agent" },
+  { id: "framework", label: "Framework" },
+  { id: "capabilities", label: "Capabilities" },
+  { id: "outcomes", label: "Outcomes" },
 ]
 
-function Card({ kicker, title, body }: { kicker: string; title: string; body: string }) {
-  return (
-    <div className="rounded-xl border border-border bg-white/[0.04] p-6 transition hover:-translate-y-0.5 hover:border-primary/50">
-      <div className="mb-3 text-[13px] font-bold text-primary">{kicker}</div>
-      <h3 className="mb-2 text-lg font-semibold">{title}</h3>
-      <p className="text-sm text-muted-foreground">{body}</p>
-    </div>
-  )
-}
+const FRAMEWORK = [
+  { n: "01", t: "Positioning", d: "Define the one thing you're best at, for the customer who needs it most." },
+  { n: "02", t: "Segmentation", d: "Find the beachhead — the segment you can win first and expand from." },
+  { n: "03", t: "Messaging", d: "Turn positioning into words that land, per persona and channel." },
+  { n: "04", t: "Channels", d: "Choose the two or three routes to market that actually reach them." },
+  { n: "05", t: "Launch", d: "Sequence the launch: assets, timing, and the first hundred users." },
+  { n: "06", t: "Measure", d: "Instrument activation and retention, then iterate on what moves them." },
+]
 
-function SectionHead({ eyebrow, title, lead }: { eyebrow: string; title: string; lead?: string }) {
-  return (
-    <>
-      <div className="mb-3 text-[13px] uppercase tracking-[0.16em] text-accent">{eyebrow}</div>
-      <h2 className="max-w-3xl text-3xl font-extrabold tracking-tight sm:text-4xl">{title}</h2>
-      {lead && <p className="mt-3 max-w-2xl text-lg text-muted-foreground">{lead}</p>}
-    </>
-  )
+const CAPABILITIES = [
+  { t: "Strategic planning", d: "Turns a goal into a sequenced, defensible go-to-market plan." },
+  { t: "Positioning & narrative", d: "Sharp positioning statements and clear category framing." },
+  { t: "Market segmentation", d: "Identifies and ranks beachhead segments, with the reasoning." },
+  { t: "Messaging & copy", d: "Persona-specific value props, headlines, and launch copy." },
+  { t: "Launch execution", d: "Concrete checklists, timelines, and channel plays — not theory." },
+  { t: "Live research", d: "Pulls current market signal with built-in web search." },
+]
+
+// TODO @16:00: replace with real numbers / a real quote once the mission is set.
+const OUTCOMES = [
+  { stat: "1 session", label: "From blank page to a structured GTM plan." },
+  { stat: "6 steps", label: "Positioning through launch, sequenced and explained." },
+  { stat: "Always-on", label: "A strategist your whole team can think with." },
+]
+
+function Eyebrow({ children }: { children: React.ReactNode }) {
+  return <div className="text-xs font-semibold uppercase tracking-[0.2em] text-burnt">{children}</div>
 }
 
 export default function App() {
   return (
     <div className="page-bg min-h-full">
       {/* NAV */}
-      <nav className="sticky top-0 z-50 border-b border-border bg-background/60 backdrop-blur-xl">
+      <nav className="sticky top-0 z-50 border-b border-border/70 bg-background/80 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-          <div className="flex items-center gap-2.5 font-bold tracking-tight">
-            <span className="h-3 w-3 rounded-full bg-gradient-to-br from-primary to-accent shadow-[0_0_16px_var(--color-primary)]" />
-            Vorker<span className="font-medium text-muted-foreground">/agent</span>
-          </div>
-          <div className="hidden gap-7 md:flex">
+          <div className="font-display text-xl tracking-tight">Vorker</div>
+          <div className="hidden gap-9 md:flex">
             {NAV.map((n) => (
-              <a key={n.href} href={n.href} className="text-sm text-muted-foreground transition hover:text-foreground">
+              <button
+                key={n.id}
+                onClick={() => goTo(n.id)}
+                className="text-sm text-muted-foreground transition hover:text-foreground"
+              >
                 {n.label}
-              </a>
+              </button>
             ))}
           </div>
           <button
-            onClick={scrollToChat}
-            className="rounded-full bg-gradient-to-br from-primary to-accent px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-[0_8px_30px_var(--color-primary)] transition hover:-translate-y-0.5"
+            onClick={() => goTo("agent", true)}
+            className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90"
           >
-            Try the agent →
+            Try the AI Agent
           </button>
         </div>
       </nav>
 
       {/* HERO */}
-      <header className="mx-auto grid min-h-[calc(100vh-4rem)] max-w-6xl items-center gap-8 px-6 py-10 md:grid-cols-[1.05fr_0.95fr]">
-        <div className="fade-up">
-          {/* TODO @16:00: tagline + headline to match the revealed mission */}
-          <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-border bg-white/[0.04] px-3 py-1.5 text-xs uppercase tracking-[0.14em] text-accent">
-            Built on Google ADK · Vorker Phase 1
-          </span>
-          <h1 className="text-[clamp(2.4rem,6vw,4.25rem)] font-extrabold leading-[1.02] tracking-tight">
-            The AI coworker that{" "}
-            <span className="bg-gradient-to-r from-primary via-accent to-warning bg-clip-text text-transparent">
-              does the work
-            </span>
-            , not just the chat.
+      <header className="mx-auto grid max-w-6xl items-center gap-12 px-6 pb-20 pt-16 md:min-h-[calc(100vh-4rem)] md:grid-cols-[1.05fr_0.95fr] md:gap-10 md:pb-10">
+        <div>
+          <div className="fade-up">
+            <Eyebrow>AI Go-To-Market Strategist</Eyebrow>
+          </div>
+          <h1 className="fade-up-2 font-display mt-6 text-[clamp(2.75rem,7vw,4.75rem)] leading-[1.05]">
+            Turn Strategy <br className="hidden sm:block" />
+            Into Execution
           </h1>
-          <p className="mt-5 max-w-xl text-lg text-muted-foreground">
-            {/* TODO @16:00: one-sentence value prop */}
-            Point it at a task and it researches, decides, and acts — powered by Google's Agent
-            Development Kit and Gemini. This page is the pitch <em>and</em> a live demo.
+          <p className="fade-up-3 mt-7 max-w-lg text-lg leading-relaxed text-muted-foreground">
+            Build, test, and launch your go-to-market plan with an AI agent that thinks
+            alongside your team.
           </p>
-          <div className="mt-7 flex flex-wrap gap-3.5">
+          <div className="fade-up-3 mt-9 flex flex-wrap items-center gap-3">
             <button
-              onClick={scrollToChat}
-              className="rounded-full bg-gradient-to-br from-primary to-accent px-5 py-3 text-sm font-semibold text-primary-foreground shadow-[0_8px_30px_var(--color-primary)] transition hover:-translate-y-0.5"
+              onClick={() => goTo("agent", true)}
+              className="rounded-full bg-primary px-6 py-3 text-[15px] font-medium text-primary-foreground transition hover:opacity-90"
             >
-              ▶ Try the live agent
+              Try the AI Agent
             </button>
-            <a
-              href="#gtm"
-              className="rounded-full border border-border bg-white/[0.04] px-5 py-3 text-sm font-semibold transition hover:bg-white/[0.07]"
+            <button
+              onClick={() => goTo("framework")}
+              className="rounded-full border border-border px-6 py-3 text-[15px] font-medium text-foreground transition hover:bg-secondary"
             >
-              See the plan
-            </a>
+              View GTM Framework
+            </button>
           </div>
         </div>
-        <div className="h-[clamp(22rem,52vh,35rem)] w-full">
-          <IridescentOrb onActivate={scrollToChat} />
+        <div className="h-[clamp(22rem,54vh,36rem)] w-full">
+          <IridescentOrb onActivate={() => goTo("agent", true)} />
         </div>
       </header>
 
-      {/* TRY IT LIVE */}
-      <section id="try" className="border-t border-border py-24">
+      {/* THE AGENT — interactive experience */}
+      <section id="agent" className="border-t border-border/70 py-24 md:py-32">
         <div className="mx-auto max-w-6xl px-6">
-          <SectionHead
-            eyebrow="Live demo"
-            title="Talk to the agent"
-            lead="Not a mockup — this box talks to the real Google ADK agent in this repo when it's running. Click the orb up top, or just type below."
-          />
-          <div className="mt-11 grid items-stretch gap-7 md:grid-cols-[1.1fr_0.9fr]">
+          <div className="max-w-2xl">
+            <Eyebrow>The experience</Eyebrow>
+            <h2 className="font-display mt-5 text-[clamp(2rem,4vw,3rem)] leading-[1.1]">
+              Think alongside an AI strategist
+            </h2>
+            <p className="mt-5 text-lg leading-relaxed text-muted-foreground">
+              This isn't a screenshot. Ask the agent a real go-to-market question and watch it
+              reason — positioning, segmentation, messaging, and launch execution.
+            </p>
+          </div>
+
+          <div className="mt-12 grid items-start gap-10 md:grid-cols-[1.1fr_0.9fr]">
             <Chat />
-            <div>
-              <h3 className="mb-2.5 text-xl font-semibold">How the live demo works</h3>
-              <p className="mb-3.5 text-muted-foreground">
-                The agent is a standard Google ADK <code className="text-accent">root_agent</code>. Serve it over
-                HTTP and this page streams its answers.
+            <div className="md:pt-2">
+              <h3 className="font-display text-xl">A live demo, not a mock-up</h3>
+              <p className="mt-3 leading-relaxed text-muted-foreground">
+                The agent is a standard Google ADK <span className="text-foreground">root_agent</span>.
+                Connect it and this panel streams real answers from Gemini.
               </p>
-              <div className="rounded-xl border border-dashed border-border bg-white/[0.04] p-4 font-mono text-[13px] leading-relaxed text-muted-foreground">
-                # 1. start the agent API (repo root, venv active)
-                <br />
-                adk api_server
-                <br />
-                <br /># 2. run this page: <span className="text-accent">npm run dev</span>
-                <br /># the status dot turns <span className="text-primary">green</span> when connected.
-                <br />
-                <br />
-                If the agent isn't running, the demo falls back to a scripted reply.
-              </div>
+              <ol className="mt-6 space-y-4">
+                {[
+                  ["Start the agent", "From the repo root: adk api_server"],
+                  ["Open the page", "npm run dev — the status dot turns rose when connected"],
+                  ["Ask anything", "If it's offline, you'll see a scripted preview instead"],
+                ].map(([t, d], i) => (
+                  <li key={i} className="flex gap-4">
+                    <span className="font-display mt-0.5 text-lg text-primary">{i + 1}</span>
+                    <span>
+                      <span className="font-medium">{t}</span>
+                      <span className="mt-0.5 block text-sm text-muted-foreground">{d}</span>
+                    </span>
+                  </li>
+                ))}
+              </ol>
             </div>
           </div>
         </div>
       </section>
 
-      {/* PROBLEM / SOLUTION */}
-      <section className="border-t border-border py-24">
+      {/* GTM FRAMEWORK */}
+      <section id="framework" className="border-t border-border/70 py-24 md:py-32">
         <div className="mx-auto max-w-6xl px-6">
-          {/* TODO @16:00 */}
-          <SectionHead
-            eyebrow="The problem"
-            title="Knowledge work is full of repetitive, judgment-light tasks."
-            lead="People spend hours on work a capable agent could own end-to-end. We give them that agent."
-          />
-          <div className="mt-11 grid gap-5 md:grid-cols-3">
-            <Card kicker="Before" title="Manual & slow" body="The task eats hours of focus time every week." />
-            <Card kicker="With Vorker" title="Autonomous" body="The agent researches, decides and produces the output for you." />
-            <Card kicker="Result" title="Hours back" body="Quantify the time/cost saved — this is your headline pitch number." />
+          <div className="max-w-2xl">
+            <Eyebrow>The framework</Eyebrow>
+            <h2 className="font-display mt-5 text-[clamp(2rem,4vw,3rem)] leading-[1.1]">
+              A clear path from idea to launch
+            </h2>
+            <p className="mt-5 text-lg leading-relaxed text-muted-foreground">
+              Every plan the agent builds follows the same disciplined sequence — the way a
+              top strategy team would work.
+            </p>
           </div>
-        </div>
-      </section>
-
-      {/* HOW IT WORKS */}
-      <section id="how" className="border-t border-border py-24">
-        <div className="mx-auto max-w-6xl px-6">
-          <SectionHead
-            eyebrow="Architecture"
-            title="Built on Google ADK"
-            lead="A single root_agent with tools — the framework Vorker requires, used the way it's meant to be used."
-          />
-          <div className="mt-10 flex flex-wrap gap-3.5">
-            {[
-              { n: "01 · input", h: "User request", p: "A natural-language task comes in via chat or API." },
-              { n: "02 · reason", h: "Gemini plans", p: "gemini-2.5-flash decides which tools to call." },
-              { n: "03 · act", h: "Tools run", p: "Live web search + custom tools do the real work." },
-              { n: "04 · answer", h: "Synthesized output", p: "Results become a clear, useful response." },
-            ].map((s) => (
-              <div key={s.n} className="min-w-[200px] flex-1 rounded-xl border border-border bg-white/[0.04] p-5">
-                <div className="font-mono text-[13px] text-accent">{s.n}</div>
-                <h4 className="mb-1.5 mt-2 font-semibold">{s.h}</h4>
-                <p className="text-sm text-muted-foreground">{s.p}</p>
+          <div className="mt-14 grid gap-x-12 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+            {FRAMEWORK.map((s) => (
+              <div key={s.n} className="border-t border-border pt-5">
+                <div className="font-display text-2xl text-primary">{s.n}</div>
+                <h3 className="font-display mt-3 text-xl">{s.t}</h3>
+                <p className="mt-2 leading-relaxed text-muted-foreground">{s.d}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* GTM */}
-      <section id="gtm" className="border-t border-border py-24">
+      {/* CAPABILITIES */}
+      <section id="capabilities" className="border-t border-border/70 py-24 md:py-32">
         <div className="mx-auto max-w-6xl px-6">
-          {/* TODO @16:00: pull highlights from docs/GTM.md */}
-          <SectionHead eyebrow="Go-to-market" title="How the first 100 users arrive" />
-          <div className="mt-11 grid gap-5 md:grid-cols-3">
-            <Card kicker="Target user" title="Who feels the pain" body="Narrow persona + the trigger moment that sends them looking." />
-            <Card kicker="Channels" title="Where we reach them" body="2–3 focused channels: community, founder-led content, integrations." />
-            <Card kicker="Aha moment" title="Value in < 2 min" body="First real task done for them = the activation hook." />
+          <div className="max-w-2xl">
+            <Eyebrow>What it does</Eyebrow>
+            <h2 className="font-display mt-5 text-[clamp(2rem,4vw,3rem)] leading-[1.1]">
+              Capabilities of the agent
+            </h2>
+          </div>
+          <div className="mt-14 grid gap-x-12 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+            {CAPABILITIES.map((c) => (
+              <div key={c.t}>
+                <div className="h-px w-10 bg-primary" />
+                <h3 className="font-display mt-4 text-xl">{c.t}</h3>
+                <p className="mt-2 leading-relaxed text-muted-foreground">{c.d}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* PRICING */}
-      <section id="pricing" className="border-t border-border py-24">
+      {/* OUTCOMES */}
+      <section id="outcomes" className="border-t border-border/70 py-24 md:py-32">
         <div className="mx-auto max-w-6xl px-6">
-          {/* TODO @16:00: pull from docs/MONETIZATION.md */}
-          <SectionHead eyebrow="Monetization" title="Pricing" lead="Priced to the value delivered, not to tokens." />
-          <div className="mt-11 grid gap-5 md:grid-cols-3">
-            {[
-              { name: "Free", price: "$0", feats: ["Try the core agent", "20 tasks / month", "Community support"], featured: false },
-              { name: "Pro", price: "$__/mo", feats: ["1,000 tasks / month", "Custom tools & history", "Priority support"], featured: true },
-              { name: "Team", price: "$__/seat", feats: ["Unlimited tasks", "Shared workspace", "Admin & SSO"], featured: false },
-            ].map((t) => (
-              <div
-                key={t.name}
-                className={`rounded-xl border bg-white/[0.04] p-6 ${
-                  t.featured ? "border-primary shadow-[0_20px_60px_var(--color-primary)]" : "border-border"
-                }`}
-              >
-                {t.featured && <div className="mb-2 text-[13px] font-bold text-primary">Most popular</div>}
-                <h3 className="text-lg font-semibold">{t.name}</h3>
-                <div className="my-3 text-3xl font-extrabold">{t.price}</div>
-                <ul className="space-y-1.5">
-                  {t.feats.map((f) => (
-                    <li key={f} className="relative pl-6 text-sm text-muted-foreground">
-                      <span className="absolute left-0 font-bold text-primary">✓</span>
-                      {f}
-                    </li>
-                  ))}
-                </ul>
+          <div className="max-w-2xl">
+            <Eyebrow>Outcomes</Eyebrow>
+            <h2 className="font-display mt-5 text-[clamp(2rem,4vw,3rem)] leading-[1.1]">
+              Strategy that turns into momentum
+            </h2>
+          </div>
+          <div className="mt-14 grid gap-10 sm:grid-cols-3">
+            {OUTCOMES.map((o) => (
+              <div key={o.stat} className="border-t border-border pt-6">
+                <div className="font-display text-4xl">{o.stat}</div>
+                <p className="mt-3 leading-relaxed text-muted-foreground">{o.label}</p>
               </div>
             ))}
+          </div>
+
+          {/* TODO @16:00: swap for a real customer quote / example */}
+          <figure className="mt-16 max-w-3xl">
+            <blockquote className="font-display text-[clamp(1.5rem,3vw,2.1rem)] leading-snug">
+              “It felt like adding a strategy partner to the team — one that drafts the plan,
+              questions our assumptions, and never runs out of patience.”
+            </blockquote>
+            <figcaption className="mt-5 text-sm text-muted-foreground">
+              Illustrative · replace with a real example after launch
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="px-6 py-12">
+        <div className="mx-auto max-w-6xl rounded-3xl bg-card px-8 py-20 text-center md:py-28">
+          <h2 className="font-display mx-auto max-w-2xl text-[clamp(2rem,4.5vw,3.25rem)] leading-[1.08]">
+            Turn strategy into execution.
+          </h2>
+          <p className="mx-auto mt-5 max-w-xl text-lg text-muted-foreground">
+            Meet the AI agent that helps your team plan, position, and launch — together.
+          </p>
+          <div className="mt-9 flex flex-wrap justify-center gap-3">
+            <button
+              onClick={() => goTo("agent", true)}
+              className="rounded-full bg-primary px-7 py-3.5 text-[15px] font-medium text-primary-foreground transition hover:opacity-90"
+            >
+              Try the AI Agent
+            </button>
+            <button
+              onClick={() => goTo("framework")}
+              className="rounded-full border border-border bg-background px-7 py-3.5 text-[15px] font-medium transition hover:bg-secondary"
+            >
+              View GTM Framework
+            </button>
           </div>
         </div>
       </section>
 
       {/* FOOTER */}
-      <footer className="border-t border-border py-14">
-        <div className="mx-auto flex max-w-6xl flex-wrap justify-between gap-4 px-6 text-sm text-muted-foreground">
-          <div>
-            <strong className="text-foreground">Vorker · Agent Sprint Phase 1</strong>
-            <br />
-            Built with Google ADK + Gemini · June 11, 2026
-          </div>
-          <div>
-            Team: <span className="font-mono">💚 coder</span> · <span className="font-mono">💙 strategy</span>
-          </div>
+      <footer className="border-t border-border/70 py-10">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-6 text-sm text-muted-foreground">
+          <div className="font-display text-base text-foreground">Vorker</div>
+          <div>Built on Google ADK + Gemini · Phase 1 · 2026</div>
         </div>
       </footer>
     </div>
