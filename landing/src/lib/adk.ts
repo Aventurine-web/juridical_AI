@@ -59,33 +59,88 @@ export async function askAgent(text: string): Promise<string> {
   return extractText(await r.json()) || "(the agent returned no text)"
 }
 
-/** Scripted fallback so the page demos well even with no backend running.
- *  Mirrors the agent's evidence-first 5-section format. */
+/** Scripted fallbacks so the page demos well even with no backend running.
+ *  Each mirrors the live agent's evidence-first 5-section format and answers
+ *  one of the three high-fidelity test cases. Order matches the Chat examples. */
 export const MOCK_REPLIES = [
+  // 1 — hembudsförbehåll requirements in a Swedish AB
   `## Answer
-Yes — the shareholder agreement contains a hembudsförbehåll (first-right-of-refusal).
+A hembudsförbehåll (right of first refusal on share transfers) only binds the company and new owners when it is written into the **bolagsordning** — under the Swedish Companies Act (Aktiebolagslagen 2005:551, 4 kap. 27–36 §§). A shareholders' agreement (aktieägaravtal) can add or strengthen it, but a clause that sits *only* in the agreement binds the parties contractually — not third parties or the share register.
 
 ## Evidence from Documents
-"§4 Hembudsförbehåll (förköpsrätt): Önskar en Aktieägare överlåta sina aktier till tredje man ska aktierna först hembjudas till övriga Aktieägare…"
-— sample_aktieagaravtal.pdf, page 1
+No document needed for this question. (Ask about a specific uploaded contract and I'll quote the exact clause + page.)
 
 ## Official Sources
-Bolagsverket — hembudsförbehåll in the bolagsordning: bolagsverket.se …
+- Aktiebolagslagen (2005:551) 4 kap. 27–36 §§ — hembudsförbehåll · riksdagen.se
+- Bolagsverket — förbehåll i bolagsordningen (hembud, förköp, samtycke) · bolagsverket.se
 
 ## Recommendation
-Confirm the 30-day window matches your bolagsordning so the clause is enforceable.
+A valid hembud in the bolagsordning should state: (1) which transfers trigger it, (2) who may buy and in what order, (3) how the price is set, and (4) the time window to claim and pay. Put it in the bolagsordning for third-party effect, and mirror the terms in the aktieägaravtal so they don't conflict.
 
 ## Disclaimer
-General information, not legal advice. (Preview — run \`adk api_server\` for a live answer.)`,
+General information, not legal advice. (Preview — run \`adk api_server\` for a live, source-checked answer.)`,
+
+  // 2 — karensavdrag for a part-time employee
   `## Answer
-The consulting agreement caps the client's liability and assigns all IP to the client.
+Since 2019 the karensdag was replaced by a **karensavdrag**: a fixed deduction equal to **20% of the sjuklön the employee would earn in an average week**. Because it's a percentage of a whole week, a part-time employee automatically gets a proportionally smaller deduction — the same 20%, applied to their lower weekly hours.
 
 ## Evidence from Documents
-"§3 Ansvarsbegränsning … begränsat till … de senaste tre (3) månaderna." — sample_konsultavtal.pdf, page 1
+No document needed for this question.
+
+## Official Sources
+- Sjuklönelagen (1991:1047) — karensavdrag · riksdagen.se
+- Försäkringskassan / verksamt.se — sjuklön och karensavdrag · forsakringskassan.se
 
 ## Recommendation
-Review §8's penalty (vite, 100 000 kr) against the capped liability — they conflict.
+Formula: **karensavdrag = 20% × weekly sjuklön**, where sjuklön = 80% of the pay for the scheduled hours.
+Worked example — 20 h/week at 150 kr/h:
+• Weekly sjuklön = 0.80 × (20 × 150) = 2 400 kr
+• Karensavdrag = 0.20 × 2 400 = **480 kr** (taken from the first sick-pay period).
+State your assumptions (hours, hourly rate) and check any kollektivavtal, which can change the method.
 
 ## Disclaimer
-General information, not legal advice. (Preview — run \`adk api_server\` for a live answer.)`,
+General information, not legal advice. (Preview — run \`adk api_server\` for a live, source-checked answer.)`,
+
+  // 3 — VAT on SaaS: B2B Norway vs B2C Germany
+  `## Answer
+SaaS is an electronically supplied service, so the place-of-supply rules decide where VAT (moms) is due:
+• **B2B customer in Norway (non-EU):** outside Swedish VAT. Invoice with no Swedish moms; the Norwegian business self-accounts for Norwegian VAT (MVA) under reverse charge.
+• **B2C customer in Germany (EU):** German VAT applies at the German rate. You collect it and declare it through the EU **OSS (One Stop Shop)** via Skatteverket.
+
+## Evidence from Documents
+No document needed for this question.
+
+## Official Sources
+- Skatteverket — moms på digitala tjänster / försäljning till utlandet · skatteverket.se
+- Skatteverket — One Stop Shop (OSS) för tjänster till privatpersoner i EU · skatteverket.se
+
+## Recommendation
+• Norway B2B: keep proof the customer is a business (org.nr) outside the EU; report it as an export of services in your VAT return.
+• Germany B2C: register for OSS and charge German VAT. Note the EU-wide €10 000 threshold for digital B2C sales — below it you may charge Swedish VAT instead.
+Confirm current rates and thresholds — they change yearly.
+
+## Disclaimer
+General information, not legal advice. (Preview — run \`adk api_server\` for a live, source-checked answer.)`,
 ]
+
+const MOCK_FALLBACK = `## Answer
+This is a preview of Vorker's evidence-first format. Connect the agent and I'll search Skatteverket, Bolagsverket and verksamt.se live, read the full source, and answer your exact question with citations.
+
+## Go live
+1. \`cp .env.example .env\` and add your GOOGLE_API_KEY (+ TAVILY_API_KEY)
+2. \`./dev.sh\` — the status dot turns rose when connected
+
+## Try a built-in example
+Tap one of the example questions below for a full, sourced answer.
+
+## Disclaimer
+General information, not legal advice.`
+
+/** Pick the demo answer that best matches a question (used when offline). */
+export function mockReplyFor(text: string): string {
+  const q = text.toLowerCase()
+  if (q.includes("hembud") || q.includes("aktieägaravtal") || q.includes("shareholder")) return MOCK_REPLIES[0]
+  if (q.includes("karensavdrag") || q.includes("part-time") || q.includes("sjuk")) return MOCK_REPLIES[1]
+  if (q.includes("vat") || q.includes("moms") || q.includes("saas")) return MOCK_REPLIES[2]
+  return MOCK_FALLBACK
+}

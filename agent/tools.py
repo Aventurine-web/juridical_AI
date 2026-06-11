@@ -14,8 +14,19 @@ from __future__ import annotations
 
 import os
 import re
+import unicodedata
+import urllib.request
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlparse
+
+
+def _fold(text: str) -> str:
+    """Lower-case and strip diacritics so 'hembudsförbehåll' matches text where a
+    PDF extracted it as 'hembudsforbehall' (å/ä/ö are commonly lost on extraction).
+    """
+    decomposed = unicodedata.normalize("NFKD", text.lower())
+    return "".join(c for c in decomposed if not unicodedata.combining(c))
 
 # ------------------------------------------------------------------ documents
 
@@ -86,7 +97,7 @@ def search_documents(query: str, max_results: int = 5) -> dict:
         {document, page, quote} where `quote` is the exact text found.
     """
     n = max(1, min(int(max_results), 10))
-    terms = [t for t in re.findall(r"\w+", query.lower()) if len(t) > 2]
+    terms = [_fold(t) for t in re.findall(r"\w+", query.lower()) if len(t) > 2]
     if not terms:
         return {"query": query, "matches": [], "found": False}
 
@@ -101,7 +112,7 @@ def search_documents(query: str, max_results: int = 5) -> dict:
                     if j + size > len(sentences):
                         continue
                     window = " ".join(sentences[j : j + size])
-                    w_low = window.lower()
+                    w_low = _fold(window)
                     hits = sum(1 for t in terms if t in w_low)
                     if not hits:
                         continue
@@ -215,3 +226,115 @@ def web_search_broad(query: str, max_results: int = 5) -> dict:
         "official_only": False,
         "warning": "Unofficial results — verify against an official source.",
     }
+
+
+# ------------------------------------------------------- full-text reader (Jina)
+
+# Domains the reader may open. Kept in sync with OFFICIAL_DOMAINS in agent.py so
+# answers stay grounded in authoritative Swedish sources.
+_READABLE_DOMAINS = [
+    "skatteverket.se",
+    "bolagsverket.se",
+    "verksamt.se",
+    "riksdagen.se",
+    "arbetsmiljoverket.se",
+    "forsakringskassan.se",
+]
+
+# Jina Reader endpoint: GET https://r.jina.ai/<target-url> returns clean
+# markdown for a web page OR a PDF — no parsing needed on our side.
+_JINA_ENDPOINT = "https://r.jina.ai/"
+_FETCH_TIMEOUT = 30  # seconds
+_MAX_BYTES = 600_000  # cap the download
+_MAX_CHARS = 50_000  # cap what we hand back to the model
+
+# Cache of fetched page text: {url: content}. Mirrors _PAGE_CACHE.
+_URL_CACHE: dict[str, str] = {}
+
+
+def _matched_domain(url: str) -> str | None:
+    """Return the allowlisted domain a (http/https) URL belongs to, else None."""
+    try:
+        parsed = urlparse(url)
+    except ValueError:
+        return None
+    if parsed.scheme not in {"http", "https"}:
+        return None
+    host = (parsed.hostname or "").lower()
+    for d in _READABLE_DOMAINS:
+        if host == d or host.endswith("." + d):
+            return d
+    return None
+
+
+def _jina_fetch(url: str) -> str:
+    """Fetch a URL through Jina Reader and return its text. Raises on failure."""
+    req = urllib.request.Request(
+        _JINA_ENDPOINT + url,
+        headers={
+            # Jina rejects the default "Python-urllib/x.y" agent with HTTP 403.
+            "User-Agent": "Vorker-Compliance-Copilot/1.0",
+            "Accept": "text/plain",
+            "X-Return-Format": "markdown",
+        },
+    )
+    api_key = os.getenv("JINA_API_KEY")
+    if api_key:
+        req.add_header("Authorization", f"Bearer {api_key}")
+
+    with urllib.request.urlopen(req, timeout=_FETCH_TIMEOUT) as resp:
+        raw = resp.read(_MAX_BYTES + 1)
+    return raw.decode("utf-8", errors="ignore")
+
+
+def read_url(url: str) -> dict:
+    """Open and read the FULL text of an official Swedish source — including PDFs.
+
+    Use this AFTER a search (`search_official_sources` or a Tavily search) when a
+    snippet is not enough: pass the most relevant official URL to read the entire
+    page or PDF, then quote it verbatim and cite the URL. This complements search,
+    which only returns short snippets, and reaches remote PDFs that the local
+    document tools cannot.
+
+    Only official Swedish domains can be opened (Skatteverket, Bolagsverket,
+    verksamt.se, Riksdagen, Arbetsmiljöverket, Försäkringskassan).
+
+    Args:
+        url: The full http(s) URL of an official source, as returned by a search.
+
+    Returns:
+        A dict with `url`, `source` (matched domain), `content` (the text) and
+        `truncated` (whether the text was cut), or an `error` if the URL is not on
+        an allowed domain or could not be fetched.
+    """
+    domain = _matched_domain(url)
+    if domain is None:
+        return {
+            "url": url,
+            "error": (
+                "Only official Swedish domains can be opened: "
+                + ", ".join(_READABLE_DOMAINS)
+                + ". Use search_official_sources to find an official URL first."
+            ),
+            "allowed_domains": _READABLE_DOMAINS,
+        }
+
+    if url in _URL_CACHE:
+        content = _URL_CACHE[url]
+        return {
+            "url": url,
+            "source": domain,
+            "content": content,
+            "truncated": len(content) >= _MAX_CHARS,
+        }
+
+    try:
+        text = _jina_fetch(url)
+    except Exception as exc:  # noqa: BLE001 — never raise into the agent
+        return {"url": url, "error": f"Could not read URL via Jina Reader: {exc}"}
+
+    truncated = len(text) > _MAX_CHARS
+    if truncated:
+        text = text[:_MAX_CHARS]
+    _URL_CACHE[url] = text
+    return {"url": url, "source": domain, "content": text, "truncated": truncated}
