@@ -1,39 +1,38 @@
-# Pitch Deck (outline)
+# Pitch — Vorker Compliance Copilot
 
-> A simple, tight pitch. Fill each slide at 16:00 once the mission is known.
-> 8 slides is plenty for a 1.5h sprint — clarity beats polish.
+**One line:** The AI coworker that reads your Swedish contracts, quotes the exact clause and
+page, and proves every answer against Skatteverket, Bolagsverket and verksamt.se.
 
-## Slide 1 — Title
-- Product name + one-line tagline.
-- Team names (💚 coder / 💙 non-coder).
+## 1 — Problem
+Swedish SME owners can't afford a lawyer for every question, and general AI confidently
+gives generic or outdated answers on moms, labour law, and company law. A wrong answer is a
+**liability** — and the owner can't tell when the model is guessing.
 
-## Slide 2 — The Problem
-- Who hurts, and how often? Make it concrete and relatable.
-- Quantify if you can (time wasted, cost, errors).
+## 2 — Why now
+Capable models (Gemini) + Google ADK make grounded, tool-using agents practical. The
+missing piece isn't intelligence — it's **trust**. We build the trust layer.
 
-## Slide 3 — The Solution
-- Our AI coworker, in one sentence.
-- The "before vs after" of a user's day.
+## 3 — Solution
+An evidence-first copilot. Upload a contract, ask a question, and get an answer in a fixed
+format: **Answer → Evidence from your document (quoted, with page) → Official Sources (URLs)
+→ Recommendation → Disclaimer.** If it can't find or verify something, it says so.
 
-## Slide 4 — How It Works (demo)
-- Screenshot / 20s screen recording of `adk web` doing the real task.
-- Show one tool call (e.g. live web search) → real output.
+## 4 — Demo (the wow)
+Live: *"Does this shareholder agreement contain a hembudsförbehåll?"* → the copilot quotes
+§4 from `sample_aktieagaravtal.pdf` page 1 and checks it against company-law guidance.
 
-## Slide 5 — Why Now / Why Us
-- Why this is possible today (capable models + Google ADK).
-- Our unfair advantage / speed of build.
+## 5 — Why we win
+**Most AI tools generate answers. We prove them.** Competitors build a chatbot over public
+sources; we add document intelligence + page-level citations — defensible and demo-memorable.
 
-## Slide 6 — Market
-- Who buys this? TAM/SAM in a sentence each (rough is fine).
+## 6 — Market & model
+Swedish SMEs (~1.2M companies; ~70k new ABs/year). Freemium → Pro (SEK/mo) → Byrå per-seat.
+Distribution via accounting firms (redovisningsbyråer) as a B2B2C channel. See
+[GTM](GTM.md) · [MONETIZATION](MONETIZATION.md) · [PARTNERSHIPS](PARTNERSHIPS.md).
 
-## Slide 7 — Business Model
-- One pricing line. (See [MONETIZATION.md](MONETIZATION.md).)
+## 7 — Ask / vision
+A trusted compliance layer for every Swedish small business — then the Nordics. Roadmap:
+real upload, clause risk-scoring, contract-vs-guidance diffing, Fortnox/Visma integration.
 
-## Slide 8 — The Ask / Vision
-- Where this goes in 12 months. What you'd do with more time.
-
----
-### Pitch tips
-- Lead with the problem, not the tech.
-- Show, don't tell — the demo is the most persuasive slide.
-- One idea per slide. Big text.
+### Slide tips
+Lead with the liability story. Make the demo slide the page-cited answer. One idea per slide.

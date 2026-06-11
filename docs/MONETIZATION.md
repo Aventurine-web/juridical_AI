@@ -1,26 +1,26 @@
-# Monetization Strategy
+# Monetization — Vorker Compliance Copilot
 
-> How this makes money. Tie price to the value delivered (time/cost saved),
-> not to model tokens.
+**Principle:** price to the **liability avoided**, not to tokens. One proven clause or one
+avoided VAT mistake is worth far more than the subscription.
 
-## Pricing model (pick one to lead with)
-- [ ] **Freemium** — free tier to drive adoption, paid for volume/advanced tools.
-- [ ] **Per-seat subscription** — $X/user/month. Simple, predictable for B2B.
-- [ ] **Usage-based** — per task / per run. Aligns cost with value, good for spiky use.
-- [ ] **Outcome-based** — charge per successful outcome (lead found, ticket resolved).
-
-## Suggested tiers (fill in)
-| Tier | Price | Who it's for | Limits | Key features |
-|------|-------|--------------|--------|--------------|
-| Free | $0 | Try-before-buy | e.g. 20 tasks/mo | Core agent |
-| Pro | $__/mo | Power users | e.g. 1,000 tasks/mo | + custom tools, history |
-| Team | $__/seat/mo | Teams | unlimited | + shared workspace, admin |
-
-## Unit economics (rough is fine)
-- **Cost per task:** ~model tokens + tool calls. `gemini-2.5-flash` is cheap — back-of-envelope it.
-- **Price per task:** set ≥ 5–10× cost to leave margin.
-- **The pitch number:** "We charge $X to save the user Y minutes worth $Z."
+## Tiers
+| Tier | Price (SEK) | For | Limits | Key value |
+|------|-------------|-----|--------|-----------|
+| **Free** | 0 | Try it | ~10 questions/mo, 1 document | Page-cited answers on your own doc |
+| **Pro** | ~249/mo | Solo founders & SMEs | Unlimited Q, multiple documents, history | Full document intelligence + official sources |
+| **Byrå / Team** | ~199/seat/mo | Accounting & law firms | Shared workspace, client folders, admin | Advise more clients, faster, with an audit trail |
 
 ## Why customers pay
-- Quantify the pain it removes (hours/week, error reduction, faster turnaround).
-- Cheaper/faster than the human-hours or the alternative tool it replaces.
+- A single wrong answer on moms or labour law can cost tens of thousands of SEK in penalties
+  or back-taxes — the subscription is a rounding error against that risk.
+- Cheaper and faster than billing a lawyer/accountant for every small question.
+- The **page-level citation** is the willingness-to-pay driver: it's defensible.
+
+## Unit economics (rough)
+- Cost/answer ≈ Gemini Flash tokens + a couple of searches — cents.
+- Price/answer (Pro, amortised) ≫ cost → healthy gross margin.
+- **Pitch number:** "We charge ~249 kr/mo to avoid mistakes that cost thousands."
+
+## Expansion paths
+Usage-based add-ons for heavy document analysis; a "verified by a human advisor" upsell
+(marketplace); white-label for banks and accounting platforms.

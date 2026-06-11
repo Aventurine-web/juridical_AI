@@ -1,70 +1,88 @@
-# Vorker Phase 1 — Agent Sprint
+# Vorker — AI Compliance Copilot for Swedish Businesses
 
-> An AI coworker built on **Google ADK** for the Vorker Intern Tryouts, Phase 1
-> (June 11, 2026). Built in ~1.5h by a 2-person team.
+> **Upload documents. Get answers with evidence.**
+> An evidence-first AI coworker that reads your contracts, quotes the **exact clause
+> and page**, and grounds every legal/tax claim in **official Swedish sources**
+> (Skatteverket, Bolagsverket, verksamt.se).
+>
+> *Most AI tools generate answers — this one proves them.*
 
-<!-- TODO @16:00: replace this line with a one-sentence pitch of what the agent does. -->
-**What it does:** _Mission revealed at 16:00 — see [`agent/AGENT.md`](agent/AGENT.md)._
+Built for **Vorker Intern Tryouts · Phase 1** (June 11, 2026) on **Google ADK**.
 
-## The problem & our solution
+---
 
-<!-- TODO: 2–3 sentences. What pain does this remove? Who feels it? -->
+## The problem — the "Compliance Gap"
 
-## How it works
+General-purpose LLMs give Swedish SME owners generic or outdated advice on company
+law and tax. A wrong answer about VAT (moms), labour law, or a shareholder agreement
+is a real liability. Owners can't tell when the model is guessing.
+
+## Our answer — prove every claim
+
+Most teams will build a Q&A chatbot over the official sources. We go one layer deeper:
+a **document-intelligence copilot** that combines two evidence layers and *shows its working*.
 
 ```
-User ──▶ root_agent (Google ADK, gemini-2.5-flash)
-              │
-              ├─ system prompt  ......... agent/agent.py  (INSTRUCTION)
-              └─ tools .................. agent/tools.py   (web_search + custom)
+Question
+   │
+   ├─ Layer 1 · YOUR DOCUMENTS   → search_documents → exact quote + page number
+   ├─ Layer 2 · OFFICIAL SOURCES → search_official_sources (skatteverket/bolagsverket/verksamt)
+   └─ Layer 3 · Swedish law      → brought in where it matters
+   ▼
+Answer in a fixed, auditable format:
+   ## Answer  ## Evidence from Documents (quote + page)  ## Official Sources (URLs)
+   ## Recommendation  ## Disclaimer
 ```
 
-- Framework: **Google ADK** (`google-adk`) — the required stack for this sprint.
-- Model: `gemini-2.5-flash` (fast, cheap; `gemini-2.5-pro` available for harder reasoning).
-- The agent discovers `root_agent` via `agent/__init__.py`, runnable with `adk run agent` or `adk web`.
+### High-fidelity examples it handles
+- *"Does this shareholder agreement contain a hembudsförbehåll?"* → finds §4, quotes it,
+  gives the page, explains it, checks it against company-law guidance.
+- *"What risks exist in this consulting agreement?"* → liability cap, IP assignment, vite/penalty — quoted with pages.
+- *"VAT for SaaS B2B to Norway vs B2C to Germany?"* → reverse charge vs OSS, cited to Skatteverket.
+
+## Architecture (Google ADK)
+
+- **Framework:** Google ADK — `root_agent` in [`agent/`](agent/), model `gemini-2.5-flash`, temp `0.1`.
+- **Tools** ([`agent/tools.py`](agent/tools.py)): `list_documents`, `search_documents`
+  (per-page PDF extraction → exact passage + page), `read_document_page`,
+  `search_official_sources` (site-restricted to the 3 authoritative domains),
+  `web_search_broad` (labelled-unofficial fallback).
+- **Guardrails:** quote verbatim with page numbers; cite official URLs or **decline**;
+  flag rules that change yearly; always append "not legal/tax advice".
 
 ## Run it
 
-See **[QUICKSTART.md](QUICKSTART.md)** for the full setup. Short version:
-
 ```bash
-python3 -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
+# one command runs the agent API + the landing page
 cp .env.example .env        # paste a free Gemini key from aistudio.google.com/app/apikey
-adk run agent
+./dev.sh                    # → landing on :5173, agent API on :8000
 ```
+Or piece by piece:
+```bash
+python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
+adk run agent               # terminal chat — try documents/ + test_prompts.md
+adk web                     # browser UI (supports uploading your own PDFs)
+cd landing && npm install && npm run dev
+```
+Sample documents live in [`documents/`](documents/); see [`test_prompts.md`](test_prompts.md).
 
 ## Project structure
-
 ```
-Vorker-ai-phase-one/
-├── README.md            ← you are here
-├── QUICKSTART.md        ← setup + the 16:00 fill-in checklist
-├── requirements.txt     ← google-adk + deps
-├── .env.example         ← GOOGLE_API_KEY
-├── agent/
-│   ├── __init__.py      ← exposes root_agent for ADK discovery
-│   ├── agent.py         ← the agent: system prompt + tool wiring
-│   ├── tools.py         ← web_search (working) + custom tool template
-│   └── AGENT.md         ← spec sheet (source of truth)
-├── test_prompts.md      ← prompts to demo the agent
-├── landing/             ← single-file landing page: pitch + GTM + LIVE agent chat
-│   └── index.html       ← open in a browser; talks to `adk api_server` when live
-└── docs/                ← business side (pitch, GTM, monetization, partnerships)
+agent/        ADK copilot — agent.py (prompt), tools.py (document + source tools), AGENT.md
+documents/    sample Swedish contracts (aktieagaravtal w/ hembud, konsultavtal)
+landing/      Vite+React+Tailwind+r3f landing page (pitch + live evidence demo)
+docs/         strategist deliverables — PITCH, GTM, MONETIZATION, PARTNERSHIPS
+dev.sh        one-command launcher · test_prompts.md · requirements.txt
 ```
 
-## Landing page & live demo
-
-`landing/index.html` is a zero-build landing page (animated 3D orb, pitch, GTM,
-pricing) with a chat box that talks to the **real agent** when `adk api_server`
-is running — and falls back to a scripted demo otherwise. See
-[`landing/README.md`](landing/README.md) to run it.
+## Roadmap — "solve for the future"
+1. **Real per-user upload** (ADK artifacts / file API) beyond the bundled samples.
+2. **Semantic retrieval** (embeddings) over long documents.
+3. **Clause library & risk scoring** — detect missing/standard clauses, redline severity.
+4. **Multi-document compare** — your contract vs current Skatteverket guidance, diffed.
+5. **Liability/audit layer** — per-answer source trail, "escalate to a human advisor",
+   Fortnox/Visma integration, expansion to other Nordics.
 
 ## Team
-
-- **Coder (💚):** <!-- name -->
-- **Non-coder (💙):** <!-- name -->
-
-## The business case
-
-See [`docs/`](docs/) — pitch, go-to-market, monetization, and partnerships.
+- 💚 Coder (The Architect) — agent, tools, ADK integration
+- 💙 Strategist — positioning, GTM, monetization, partnerships (see [`docs/`](docs/))

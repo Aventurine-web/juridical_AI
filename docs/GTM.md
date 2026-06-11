@@ -1,34 +1,36 @@
-# Go-To-Market Plan
+# Go-To-Market — Vorker Compliance Copilot
 
-> How the first 100 users find and adopt this agent. Keep it concrete.
+## 1 — Target & beachhead
+- **Beachhead:** newly-registered ABs and solo founders (~70k new companies/year in Sweden)
+  who sign shareholder/consulting agreements but can't afford a lawyer per question.
+- **The trigger:** a moment of risk — signing an aktieägaravtal, hiring the first employee
+  (karensavdrag, arbetsrätt), a cross-border invoice (moms), a Skatteverket letter.
+- **Where they are:** verksamt.se, Bolagsverket registration flow, startup communities,
+  bank SME onboarding, accounting-software dashboards, founder LinkedIn.
 
-## 1. Target user (be narrow)
-- **Primary persona:** <!-- role, company size, what their day looks like -->
-- **The trigger:** what moment makes them go looking for a tool like this?
-- **Where they hang out:** (Slack/Discord communities, subreddits, LinkedIn, newsletters, conferences)
+## 2 — Value proposition
+*For Swedish SME owners who can't risk a wrong compliance answer, Vorker is an AI copilot
+that reads your documents and proves its advice with the exact clause and an official source
+— unlike general AI, which guesses.*
 
-## 2. Value proposition
-- **One sentence:** "For [persona] who [need], [product] is a [category] that [key benefit], unlike [alternative]."
+## 3 — Channels (focus, don't spread)
+| Channel | Why it fits | First move |
+|---|---|---|
+| **Accounting firms (B2B2C)** | Byråer already advise SMEs; we make them faster | Pilot with 2–3 redovisningsbyråer |
+| **Accounting software** | Fortnox/Visma own the SME relationship | Marketplace app / integration |
+| **Founder-led content** | Trust is the product; teach the law | LinkedIn breakdowns of real clauses |
+| **verksamt.se / bank SME portals** | Exactly the trigger moment | Partnership / referral |
 
-## 3. Channels (pick 2–3, not all)
-| Channel | Why it fits | First action |
-|---------|-------------|--------------|
-| Content / SEO | | |
-| Community (Slack/Discord/Reddit) | | |
-| LinkedIn / founder-led | | |
-| Partnerships / integrations | | |
-| Cold outbound | | |
+## 4 — Motion (first 4 weeks)
+1. 5–10 design-partner founders + 2 accounting firms.
+2. Public landing + the live evidence demo; post 3 clause breakdowns.
+3. Iterate on the #1 question type; ask happy users + byråer for referrals.
 
-## 4. Launch motion (first 2 weeks)
-1. Week 0: 5–10 design-partner users for feedback.
-2. Week 1: public landing page + waitlist; post in 2 communities.
-3. Week 2: iterate on the #1 piece of feedback; ask happy users for referrals.
+## 5 — Activation & retention
+- **Aha moment:** the first page-cited answer to *their* contract — under 2 minutes.
+- **Retention:** recurring compliance needs (new hires, quarterly moms, new contracts) +
+  a "compliance calendar" of deadlines (roadmap).
 
-## 5. Activation & retention
-- **Aha moment:** the first time a user sees the agent do real work for them. Get them there in < 2 minutes.
-- **Retention hook:** why they come back tomorrow (saved time, recurring task, scheduled runs).
-
-## 6. Metrics that matter
-- Activation rate (signed up → reached aha moment).
-- Weekly active users / tasks completed.
-- Time saved per user (the headline number for the pitch).
+## 6 — Metrics
+Activation rate (upload → first cited answer) · weekly questions answered ·
+documents analysed · byrå seats · time-to-answer vs a human advisor.
